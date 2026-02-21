@@ -19,13 +19,10 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.io.*;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
 
 import static org.bytedeco.opencv.global.opencv_imgproc.CV_BGR2GRAY;
 import static org.opencv.imgcodecs.Imgcodecs.IMREAD_GRAYSCALE;
-import static tutorial.opencv.face.recognition.RealTimeFaceRecognition.Mat2BufferedImage;
 
 public class RealTimeFaceDetection {
 
