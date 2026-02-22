@@ -52,6 +52,11 @@ import static org.opencv.imgcodecs.Imgcodecs.imread;
 
 public class RealTimeFaceRecognition {
 
+    static final FilenameFilter IMG_FILTER = (dir, name) -> {
+        name = name.toLowerCase();
+        return name.endsWith(".jpg") || name.endsWith(".pgm") || name.endsWith(".png");
+    };
+
     Map<Integer, Mat> images = new HashMap<>();
     Map<Integer, String> personNames = new HashMap<>();
 
@@ -64,10 +69,7 @@ public class RealTimeFaceRecognition {
         Path trainingDir = Paths.get("src/main/resources/images/training").toAbsolutePath();
         File root = new File(trainingDir.toString());
 
-        FilenameFilter imgFilter = (dir, name) -> {
-            name = name.toLowerCase();
-            return name.endsWith(".jpg") || name.endsWith(".pgm") || name.endsWith(".png");
-        };
+        FilenameFilter imgFilter = IMG_FILTER;
 
         File[] imageFiles = root.listFiles(imgFilter);
         Mat labels = new Mat(imageFiles.length, 1, CV_32SC1);
@@ -125,12 +127,7 @@ public class RealTimeFaceRecognition {
 
         File root = new File(trainingDir.toString());
 
-        FilenameFilter imgFilter = (dir, name) -> {
-            name = name.toLowerCase();
-            return name.endsWith(".jpg") || name.endsWith(".pgm") || name.endsWith(".png");
-        };
-
-        File[] imageFiles = root.listFiles(imgFilter);
+        File[] imageFiles = root.listFiles(IMG_FILTER);
         Mat labels = new Mat(imageFiles.length, 1, CV_32SC1);
         Map<Integer, Mat> images = new HashMap<>();
         Map<Integer, String> personNames = new HashMap<>();
