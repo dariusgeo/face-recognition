@@ -26,6 +26,27 @@ import static org.opencv.imgcodecs.Imgcodecs.IMREAD_GRAYSCALE;
 
 public class RealTimeFaceDetection {
 
+    static CascadeClassifier loadCascadeClassifier() throws Exception {
+        URL url = RealTimeFaceDetection.class.getClassLoader().getResource("haarcascade_frontalface_default.xml");
+        File file = Paths.get(url.toURI()).toFile();
+        return new CascadeClassifier(file.getAbsolutePath());
+    }
+
+    static BufferedImage matToBufferedImage(Mat matrix) {
+        BufferedImage image = new BufferedImage(matrix.width(), matrix.height(), BufferedImage.TYPE_3BYTE_BGR);
+        WritableRaster raster = image.getRaster();
+        DataBufferByte dataBuffer = (DataBufferByte) raster.getDataBuffer();
+        byte[] data = dataBuffer.getData();
+        matrix.get(0, 0, data);
+        return image;
+    }
+
+    static byte[] encodeMatToJpeg(Mat mat) {
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".jpg", mat, matOfByte);
+        return matOfByte.toArray();
+    }
+
     private static byte[] captureFrame(VideoCapture videoInput,
                                        RealTimeFaceRecognition eigenFaceRecognizer,
                                        FaceRecognizer faceRecognizer) throws Exception {
@@ -36,10 +57,7 @@ public class RealTimeFaceDetection {
 
         // If there is next video frame
         if (videoInput.read(matrix)) {
-            RealTimeFaceDetection realTimeFaceDetection = new RealTimeFaceDetection();
-            URL url = realTimeFaceDetection.getClass().getClassLoader().getResource("haarcascade_frontalface_default.xml");
-            File file = Paths.get(url.toURI()).toFile();
-            CascadeClassifier classifier = new CascadeClassifier(file.getAbsolutePath());
+            CascadeClassifier classifier = loadCascadeClassifier();
 
             MatOfRect faceDetections = new MatOfRect();
             /// Detecting faces in video frame ///
@@ -81,22 +99,10 @@ public class RealTimeFaceDetection {
             }
 
             // Creating BufferedImage from the matrix
-            BufferedImage image = new BufferedImage(matrix.width(), matrix.height(),
-                    BufferedImage.TYPE_3BYTE_BGR);
-
-            WritableRaster raster = image.getRaster();
-            DataBufferByte dataBuffer = (DataBufferByte) raster.getDataBuffer();
-            byte[] data = dataBuffer.getData();
-            matrix.get(0, 0, data);
+            matToBufferedImage(matrix);
         }
 
-        //instantiating an empty MatOfByte class
-        MatOfByte matOfByte = new MatOfByte();
-
-        //Converting the Mat object to MatOfByte
-        Imgcodecs.imencode(".jpg", matrix, matOfByte);
-
-        return matOfByte.toArray();
+        return encodeMatToJpeg(matrix);
     }
 
     public static void main(String[] args) throws Exception {
